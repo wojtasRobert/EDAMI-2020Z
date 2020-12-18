@@ -1,6 +1,8 @@
+from dEclat.Itemset import Itemset
+
 class Diflist:
-    def __init__(self, item, support, list=[], initial=None):
-        self.item = item
+    def __init__(self, itemset: Itemset, support: float, list=[], initial=None):
+        self.itemset = itemset
         self.support = support # should NOT be equal to 0
 
         if initial is None:
@@ -12,8 +14,14 @@ class Diflist:
         self.list.append(item)
         self.support -= 1
 
+    def union(self, diflist):
+        itemset = [*self.itemset.items, diflist.itemset.items[-1]]
+        items = list(filter(lambda x: x not in self.list, diflist.list))
+        support = self.support - len(items)
+        return Diflist(Itemset(itemset), support, initial=items)
+
     def __str__(self):
-        return f"{self.list} (sup={self.support})"
+        return f"({self.itemset}) {self.list} (sup={self.support})"
 
     def __repr__(self):
-        return f"{self.list} (sup={self.support})"
+        return f"({self.itemset}) {self.list} (sup={self.support})"

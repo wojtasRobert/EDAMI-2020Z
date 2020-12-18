@@ -1,37 +1,43 @@
 from Transactional.Database import TransactionalDatabase, Transaction, Item
 from dEclat.Control import dEclatControl
 from dEclat.Diflist import Diflist
+from dEclat.Itemset import Itemset
 from math import floor
 
-def createInitialTidlists(db: TransactionalDatabase):
-    tidlists = {} 
+def createInitialDiflists(db: TransactionalDatabase):
+    diflists = {} 
     maxSupport = db.size()
 
     for item in db.items:
-        tidlists[item.id] = Diflist(item, maxSupport)
+        diflists[item.id] = Diflist(Itemset(items=[item]), maxSupport)
 
     for transaction in db.transactions:
         for item in db.items:
             if item not in transaction.items:
-                tidlists[item.id].push(transaction.id)
+                diflists[item.id].push(transaction.id)
     
-    return tidlists
+    return diflists
 
-def filterFrequentItemsets(tidlists, threshold):
-    return filter(lambda x: x[1].support > threshold, tidlists.items())
+def filterFrequentItemsets(diflists, threshold):
+    filteredDiflists = {}
+    for (idx, diflist) in diflists.items():
+        if diflist.support >= threshold:
+            filteredDiflists[idx] = diflist
+            
+    return filteredDiflists
     
 def dEclat(db: TransactionalDatabase, params: dEclatControl):
     frequentThreshold = floor(params.support * db.size())
-    print(frequentThreshold)
-    
-    tidlists = createInitialTidlists(db)
-    print(tidlists)
+
+    diflists = createInitialDiflists(db)
+    print(diflists)
     
     print("---")
 
-    tidlists = filterFrequentItemsets(tidlists, frequentThreshold)
+    diflists = filterFrequentItemsets(diflists, frequentThreshold)
+    print(diflists)
 
-    for tl in tidlists:
-        print(tl)
+    print("Merging diflists")
+    print(diflists[1].union(diflists[3]))
 
-    return tidlists
+    return diflists
