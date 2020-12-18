@@ -34,5 +34,8 @@ class TransactionalDatabase:
         self.items = items
         self.transactions = transactions
 
+    def size(self):
+        return len(self.transactions)
+
     def __str__(self):
         return f"Transactional database of {len(self.items)} items with {len(self.transactions)} transactions"
