@@ -20,8 +20,8 @@ def read_csv(filename,):
                 items_map[item_name] = new_item
                 id_counter += 1
 
-    for (_, data) in df.iterrows():
-        itemset = Transaction()
+    for idx, data in df.iterrows():
+        itemset = Transaction(idx+1)
         for key, value in data.to_dict().items():
             if not pd.isna(value):
                 item_name = f"{key}={value}"

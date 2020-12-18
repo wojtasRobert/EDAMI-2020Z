@@ -11,15 +11,16 @@ class Item:
 
 
 class Transaction:
-    def __init__(self):
+    def __init__(self, transactionId):
         self.items = []
         self.counter = 0
+        self.id = transactionId
 
     def __str__(self):
-        return f"Transaction: {self.items}"
+        return f"Transaction: {self.items} ({self.id})"
 
     def __repr__(self):
-        return f"Transaction: {self.items}"
+        return f"Transaction: {self.items} ({self.id})"
 
 
     def push(self, item):
