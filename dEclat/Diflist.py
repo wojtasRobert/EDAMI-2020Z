@@ -15,6 +15,8 @@ class Diflist:
         self.support -= 1
 
     def union(self, diflist):
+        if diflist.itemset.items[-1] in self.itemset.items:
+            return None
         itemset = [*self.itemset.items, diflist.itemset.items[-1]]
         items = list(filter(lambda x: x not in self.list, diflist.list))
         support = self.support - len(items)

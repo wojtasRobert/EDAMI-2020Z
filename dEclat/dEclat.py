@@ -28,16 +28,38 @@ def filterFrequentItemsets(diflists, threshold):
     
 def dEclat(db: TransactionalDatabase, params: dEclatControl):
     frequentThreshold = floor(params.support * db.size())
+    frequentItemsets = []
 
     diflists = createInitialDiflists(db)
-    print(diflists)
-    
-    print("---")
-
     diflists = filterFrequentItemsets(diflists, frequentThreshold)
-    print(diflists)
+    
+    if params.minlen <= 1:
+        for diflist in diflists.values():
+            frequentItemsets.append(diflist)
 
-    print("Merging diflists")
-    print(diflists[1].union(diflists[3]))
+    def dEclatImpl(diflists, depth):
+        if depth > params.maxlen or len(diflists.keys()) == 0:
+            return
 
-    return diflists
+        next_it = {}
+        for (key_i, diflist_i) in diflists.items():
+            next_it[key_i] = {}; idx = 1
+            for (key_j, diflist_j) in diflists.items():
+                if key_i >= key_j:
+                    continue
+                
+                new_diflist =  diflist_i.union(diflist_j)
+                if new_diflist is not None:
+                    next_it[key_i][idx] = new_diflist
+                    idx += 1
+    
+            next_it[key_i] = filterFrequentItemsets(next_it[key_i], frequentThreshold)
+            for diflist in next_it[key_i].values():
+                if params.minlen <= depth:
+                    frequentItemsets.append(diflist)
+
+        for subset in next_it.values():
+            dEclatImpl(subset, depth+1)
+
+    dEclatImpl(diflists, 2)
+    return frequentItemsets
