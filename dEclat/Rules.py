@@ -1,5 +1,6 @@
 from Transactional.Database import TransactionalDatabase
 from dEclat.Itemset import Itemset
+import pandas as pd
 
 class InductionControl:
     def __init__(self, confidence=0.5):
@@ -17,6 +18,14 @@ class Rule:
 
     def __repr__(self):
         return f"{self.lhs} => {self.rhs} (sup={self.support}, conf={self.confidence})"
+
+    def to_dict(self):
+        return {
+            "lhs": self.lhs,
+            "rhs": self.rhs,
+            "support": self.support,
+            "confidence": self.confidence
+        }
     
 class Ruleset:
     def __init__(self):
@@ -30,6 +39,9 @@ class Ruleset:
 
     def __repr__(self):
         return f"{self.rules}"
+
+    def as_data_frame(self):
+        return pd.DataFrame.from_records([r.to_dict() for r in self.rules])
 
 def rulesInduction(frequentItemsets, db: TransactionalDatabase, params: InductionControl):
     ruleset = Ruleset()
