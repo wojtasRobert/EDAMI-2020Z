@@ -1,2 +1,1 @@
-from dEclat.dEclat import dEclat
-from dEclat.Control import dEclatControl
+from dEclat.dEclat import dEclat, dEclatControl

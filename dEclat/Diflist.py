@@ -3,6 +3,7 @@ from dEclat.Itemset import Itemset
 class Diflist:
     def __init__(self, itemset: Itemset, support: float, list=[], initial=None):
         self.itemset = itemset
+        self.length = len(itemset.items)
         self.support = support # should NOT be equal to 0
 
         if initial is None:

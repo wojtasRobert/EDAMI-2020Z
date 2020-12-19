@@ -3,7 +3,7 @@ from uuid import uuid4
 class Itemset:
     def __init__(self, items=[]):
         self.items = items
-        self.hash = uuid4()
+        self.hash = hash(str(items))
 
     def add(self, item):
         it = Itemset(items=[*self.items, item])

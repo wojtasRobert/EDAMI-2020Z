@@ -1,8 +1,14 @@
 from Transactional.Database import TransactionalDatabase, Transaction, Item
-from dEclat.Control import dEclatControl
 from dEclat.Diflist import Diflist
 from dEclat.Itemset import Itemset
+from dEclat.Rules import Rule, Ruleset, InductionControl
 from math import floor
+
+class dEclatControl:
+    def __init__(self, support=0.1, minlen=1, maxlen=10):
+        self.support = support
+        self.minlen = minlen
+        self.maxlen = maxlen
 
 def createInitialDiflists(db: TransactionalDatabase):
     diflists = {} 
