@@ -5,10 +5,13 @@ from dEclat.Rules import Rule, Ruleset, InductionControl
 from math import floor
 
 class dEclatControl:
-    def __init__(self, support=0.1, minlen=1, maxlen=10):
+    def __init__(self, support=0.1, minlen=1, maxlen=10, use_matrix=False, sort=False, sort_reverse=False):
         self.support = support
         self.minlen = minlen
         self.maxlen = maxlen
+        self.use_matrix = use_matrix
+        self.sort = sort
+        self.sort_reverse = sort_reverse
 
 def createInitialDiflists(db: TransactionalDatabase):
     diflists = {} 
@@ -38,7 +41,13 @@ def dEclat(db: TransactionalDatabase, params: dEclatControl):
 
     diflists = createInitialDiflists(db)
     diflists = filterFrequentItemsets(diflists, frequentThreshold)
+
+    if params.sort:
+        diflists = dict(sorted(diflists.items(), key=lambda item: item[1].support))
     
+    if params.sort_reverse:
+        diflists = dict(sorted(diflists.items(), key=lambda item: item[1].support, reverse=True))
+
     if params.minlen <= 1:
         for diflist in diflists.values():
             frequentItemsets.append(diflist)
