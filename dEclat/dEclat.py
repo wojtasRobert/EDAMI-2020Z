@@ -3,15 +3,18 @@ from dEclat.Diflist import Diflist
 from dEclat.Itemset import Itemset
 from dEclat.Rules import Rule, Ruleset, InductionControl
 from math import floor
+import numpy as np
 
 class dEclatControl:
     def __init__(self, support=0.1, minlen=1, maxlen=10, use_matrix=False, sort=False, sort_reverse=False):
         self.support = support
         self.minlen = minlen
         self.maxlen = maxlen
+
         self.use_matrix = use_matrix
         self.sort = sort
         self.sort_reverse = sort_reverse
+
 
 def createInitialDiflists(db: TransactionalDatabase):
     diflists = {} 
@@ -38,7 +41,7 @@ def filterFrequentItemsets(diflists, threshold):
 def dEclat(db: TransactionalDatabase, params: dEclatControl):
     frequentThreshold = floor(params.support * db.size())
     frequentItemsets = []
-
+    
     diflists = createInitialDiflists(db)
     diflists = filterFrequentItemsets(diflists, frequentThreshold)
 
@@ -51,6 +54,20 @@ def dEclat(db: TransactionalDatabase, params: dEclatControl):
     if params.minlen <= 1:
         for diflist in diflists.values():
             frequentItemsets.append(diflist)
+
+    if params.use_matrix:
+        matrix = []
+        for i, fi in enumerate(frequentItemsets):
+            for j, fj in enumerate(frequentItemsets):
+                if i == j or i > j:
+                    continue
+                matrix.append(fi.union(fj))
+                
+        diflists = {}
+        for idx, candidate in enumerate(matrix):
+            if candidate.support >= frequentThreshold:
+                diflists[idx] = candidate
+                
 
     def dEclatImpl(diflists, depth):
         if depth > params.maxlen or len(diflists.keys()) == 0:
@@ -76,5 +93,6 @@ def dEclat(db: TransactionalDatabase, params: dEclatControl):
         for subset in next_it.values():
             dEclatImpl(subset, depth+1)
 
-    dEclatImpl(diflists, 2)
+    dEclatImpl(diflists, 3 if params.use_matrix else 2)
+
     return frequentItemsets
